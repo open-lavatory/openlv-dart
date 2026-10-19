@@ -1,0 +1,24 @@
+name: openlv
+description: >-
+  Dart bindings for Open Lavatory (openlv), a secure peer-to-peer
+  wallet connectivity protocol. Wraps the openlv Rust crate via
+  flutter_rust_bridge.
+version: 0.1.0
+repository: https://github.com/open-lavatory/openlv-dart
+issue_tracker: https://github.com/open-lavatory/openlv-dart/issues
+homepage: https://openlv.sh
+
+environment:
+  sdk: ^3.13.0
+
+# Build hooks compile with the consuming application's dependencies.
+dependencies:
+  code_assets: ^2.1.0
+  ffi: ^2.1.0
+  # The FRB runtime enforces equality with the generated bindings' version.
+  flutter_rust_bridge: 2.13.0
+  hooks: ^2.2.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0
