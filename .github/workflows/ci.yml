@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Resolve Dart dependencies
+        run: nix develop -c dart pub get --no-example
+
+      - name: Check format
+        working-directory: rust
+        run: nix develop -c cargo fmt --check
+
+      - name: Lint
+        working-directory: rust
+        run: nix develop -c cargo clippy --all-targets -- -D warnings
+
+      - name: Test Rust
+        working-directory: rust
+        run: nix develop -c cargo test
+
+      - name: Analyze Dart
+        run: nix develop -c dart analyze lib test hook
+
+      - name: Test Dart
+        run: nix develop -c dart test
