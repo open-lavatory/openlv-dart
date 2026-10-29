@@ -3,6 +3,62 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:openlv/openlv.dart';
+import 'package:web3dart/web3dart.dart';
+
+final _exampleKey = EthPrivateKey.fromHex(
+  '0000000000000000000000000000000000000000000000000000000000000004',
+);
+final _exampleAddress = _exampleKey.address.eip55With0x;
+
+Map<String, Object?> _rpcError(Object? id, int code, String message) => {
+  'jsonrpc': '2.0',
+  'id': id,
+  'error': {'code': code, 'message': message},
+};
+
+Map<String, Object?> exampleRpcResponse(Object? message) {
+  final request = message is Map ? message : const {};
+  final id = request['id'];
+  final method = request['method'];
+  if (request['jsonrpc'] != '2.0' || method is! String) {
+    return _rpcError(id, -32600, 'Invalid request');
+  }
+  return switch (method) {
+    'eth_chainId' => {'jsonrpc': '2.0', 'id': id, 'result': '0x1'},
+    'eth_accounts' || 'eth_requestAccounts' => {
+      'jsonrpc': '2.0',
+      'id': id,
+      'result': [_exampleAddress],
+    },
+    'personal_sign' => _personalSign(id, request['params']),
+    _ => _rpcError(id, -32601, 'Method not found'),
+  };
+}
+
+Map<String, Object?> _personalSign(Object? id, Object? params) {
+  if (params is! List ||
+      params.length != 2 ||
+      params[0] is! String ||
+      params[1] is! String) {
+    return _rpcError(id, -32602, 'Expected message and account parameters');
+  }
+  final message = params[0] as String;
+  final account = params[1] as String;
+  if (account.toLowerCase() != _exampleAddress.toLowerCase()) {
+    return _rpcError(id, 4100, 'Requested account is not available');
+  }
+  if (!RegExp(r'^0x(?:[0-9a-fA-F]{2})*$').hasMatch(message)) {
+    return _rpcError(id, -32602, 'Message must be 0x-prefixed hex bytes');
+  }
+  final signature = _exampleKey.signPersonalMessageToUint8List(
+    hexToBytes(message),
+  );
+  return {
+    'jsonrpc': '2.0',
+    'id': id,
+    'result': bytesToHex(signature, include0x: true),
+  };
+}
 
 void main() {
   runApp(const OpenLvExampleApp());
@@ -67,7 +123,7 @@ class _DappPageState extends State<DappPage> {
       ),
       onRequest: (message) async {
         _addLog('request: $message');
-        return {'result': 'ok', 'echo': message};
+        return exampleRpcResponse(message);
       },
     );
     if (!mounted) {
@@ -94,6 +150,8 @@ class _DappPageState extends State<DappPage> {
     if (session == null) return;
     try {
       final response = await session.send({
+        'jsonrpc': '2.0',
+        'id': 1,
         'method': 'eth_chainId',
         'params': <Object?>[],
       });
@@ -204,7 +262,7 @@ class _WalletPageState extends State<WalletPage> {
         ),
         onRequest: (message) async {
           _addLog('request: $message');
-          return {'result': 'ok', 'echo': message};
+          return exampleRpcResponse(message);
         },
       );
       if (!mounted) {
@@ -244,6 +302,11 @@ class _WalletPageState extends State<WalletPage> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        SelectableText('Account: $_exampleAddress'),
+        SelectableText(
+          'Public key: ${bytesToHex(_exampleKey.encodedPublicKey, include0x: true)}',
+        ),
+        const SizedBox(height: 12),
         TextField(
           controller: _urlController,
           decoration: const InputDecoration(

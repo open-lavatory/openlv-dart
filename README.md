@@ -13,8 +13,12 @@ import 'package:openlv/openlv.dart';
 final dapp = await OpenLv.dapp(
   info: PeerInfo(identity: 'com.example.dapp', name: 'Example dApp'),
   onRequest: (message) async {
-    print('received: $message');
-    return {'result': 'ok'};
+    final request = message as Map<String, dynamic>;
+    return {
+      'jsonrpc': '2.0',
+      'id': request['id'],
+      'error': {'code': -32601, 'message': 'Method not found'},
+    };
   },
 );
 
@@ -22,7 +26,12 @@ await dapp.connect();
 print('Connection URL: ${dapp.uri}'); // share with the wallet
 
 await dapp.waitForLink();
-final response = await dapp.send({'method': 'eth_chainId', 'params': []});
+final response = await dapp.send({
+  'jsonrpc': '2.0',
+  'id': 1,
+  'method': 'eth_chainId',
+  'params': [],
+});
 print('Response: $response');
 
 await dapp.close();
@@ -34,7 +43,14 @@ await dapp.close();
 final wallet = await OpenLv.wallet(
   'openlv://...', // connection URL from the dApp
   info: PeerInfo(identity: 'com.example.wallet', name: 'Example Wallet'),
-  onRequest: (message) async => {'result': 'ok'},
+  onRequest: (message) async {
+    final request = message as Map<String, dynamic>;
+    return {
+      'jsonrpc': '2.0',
+      'id': request['id'],
+      'error': {'code': -32601, 'message': 'Method not found'},
+    };
+  },
 );
 
 await wallet.connect();
