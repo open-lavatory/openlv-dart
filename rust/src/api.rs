@@ -122,7 +122,12 @@ impl From<openlv::OpenLvError> for OpenLvFailure {
             E::InvalidUri(_) => OpenLvErrorKind::InvalidUri,
             E::Signaling(_) => OpenLvErrorKind::Signaling,
             E::Transport(_) => OpenLvErrorKind::Transport,
-            E::Session(_) => OpenLvErrorKind::Session,
+            E::Session(_)
+            | E::SessionClosed
+            | E::RequestLimitReached
+            | E::RequestFailed
+            | E::InvalidRequestTimeout
+            | E::ResponseChannelClosed => OpenLvErrorKind::Session,
             E::Encryption(_) => OpenLvErrorKind::Encryption,
             E::WireFrame(_) => OpenLvErrorKind::WireFrame,
             E::ProtocolViolation(_) => OpenLvErrorKind::ProtocolViolation,

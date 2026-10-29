@@ -1756,7 +1756,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "openlv"
 version = "0.1.0"
-source = "git+https://github.com/open-lavatory/openlv-rs?rev=71ed27338a083422c7d335f50ff99a6f0cc8ada7#71ed27338a083422c7d335f50ff99a6f0cc8ada7"
+source = "git+https://github.com/open-lavatory/openlv-rs?rev=115d46e2c19a7d646cf0b39c76797d985c1e19e0#115d46e2c19a7d646cf0b39c76797d985c1e19e0"
 dependencies = [
  "aead",
  "aes-gcm",
