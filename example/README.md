@@ -8,10 +8,12 @@ Demonstrates the [openlv](../) Flutter SDK in both roles:
 * **Wallet (client)** — pastes a connection URL, connects and answers incoming
   requests.
 
-Run it on a desktop target (or any Flutter target with native assets support):
+Platform runners are generated locally rather than checked in. From this
+directory, generate the target you need and run the app:
 
 ```sh
-flutter run -d linux   # or -d macos / -d windows / a device
+dart tool/setup.dart linux
+flutter run -d linux
 ```
 
 To exercise the full loop, run the app twice side by side: create a session on
