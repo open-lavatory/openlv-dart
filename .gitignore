@@ -1,0 +1,20 @@
+# Dart/Misc
+.dart_tool/
+.packages
+pubspec.lock
+coverage/
+
+# Platform build outputs
+build/
+example/build/
+.android/
+.ios/
+# Example platform projects are generated with example/tool/setup.dart.
+example/android/
+example/ios/
+example/linux/
+example/macos/
+example/windows/
+example/.metadata
+# Rust
+rust/target/

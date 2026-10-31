@@ -1,0 +1,12 @@
+[package]
+name = "openlv-dart-native"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "openlv_dart_ffi"
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+bridge = { package = "openlv-uniffi", git = "https://github.com/jonatan-holmgren/openlv-rs", branch = "uniffi" }

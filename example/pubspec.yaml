@@ -1,0 +1,22 @@
+name: openlv_example
+description: Demonstrates the openlv Flutter SDK (dApp and wallet roles).
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  openlv:
+    path: ../
+  web3dart: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
