@@ -1,5 +1,5 @@
 import 'models.dart';
-import 'rust/api.dart' as w;
+import 'uniffi/openlv_uniffi.dart' as native;
 
 /// An error raised by the openlv SDK.
 class OpenLvException implements Exception {
@@ -14,8 +14,16 @@ class OpenLvException implements Exception {
 
 OpenLvException openLvExceptionFrom(Object error) {
   if (error is OpenLvException) return error;
-  if (error is w.OpenLvFailure) {
-    return OpenLvException(error.kind, error.message);
+  if (error is native.BridgeErrorExceptionFailure) {
+    final name = error.kind.replaceAllMapped(
+      RegExp(r'_([a-z])'),
+      (match) => match[1]!.toUpperCase(),
+    );
+    final kind = OpenLvErrorKind.values.where((value) => value.name == name);
+    return OpenLvException(
+      kind.isEmpty ? OpenLvErrorKind.other : kind.first,
+      error.message,
+    );
   }
   return OpenLvException(OpenLvErrorKind.other, '$error');
 }

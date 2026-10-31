@@ -1,23 +1,20 @@
-// FRB's generated IO bindings use its internal ExternalLibrary export.
-// ignore_for_file: invalid_use_of_internal_member
+// The bootstrap symbol locates the bundled UniFFI native asset.
 
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart'
-    show ExternalLibrary;
 
 import 'errors.dart';
 import 'models.dart';
-import 'rust/frb_generated.dart';
+import 'uniffi/openlv_uniffi.dart' as uniffi;
 
 const String _kAssetId = 'package:openlv/src/native/openlv_ffi.g.dart';
 
-const String _kStem = 'openlv_ffi';
+const String _kStem = 'openlv_dart_ffi';
 
-// Load the bundled native asset and get its path for FRB's dynamic lookups.
+// Load the bundled native asset and obtain its path for UniFFI symbol lookups.
 @Native<Pointer<Utf8> Function()>(
   assetId: _kAssetId,
   symbol: 'openlv_ffi_bootstrap',
@@ -36,9 +33,7 @@ Future<void>? _initFuture;
 /// 2. the `OPENLV_LIBRARY_PATH` environment variable,
 /// 3. the process image (for statically linked builds),
 /// 4. the bundled native asset (via the bootstrap anchor),
-/// 5. `rust/target/{release,debug}/` next to the working directory and common
-///    locations next to the running executable,
-/// 6. the flutter_rust_bridge default loader.
+/// 5. common native library paths relative to the working directory or executable.
 Future<void> initOpenLv({String? libraryPath}) {
   final pending = _initFuture;
   if (pending != null) return pending;
@@ -68,7 +63,8 @@ Future<void> _doInit(String? libraryPath) async {
       try {
         final handle = DynamicLibrary.open(candidate);
         handle.lookup('openlv_ffi_bootstrap');
-        await RustLib.init(externalLibrary: ExternalLibrary.open(candidate));
+        uniffi.configureDefaultBindings(dynamicLibrary: handle);
+        await uniffi.generateSessionId();
         return true;
       } catch (error) {
         failures.add('$candidate: $error');
@@ -86,9 +82,8 @@ Future<void> _doInit(String? libraryPath) async {
 
   try {
     DynamicLibrary.process().lookup('openlv_ffi_bootstrap');
-    await RustLib.init(
-      externalLibrary: ExternalLibrary.process(iKnowHowToUseIt: true),
-    );
+    uniffi.configureDefaultBindings(dynamicLibrary: DynamicLibrary.process());
+    await uniffi.generateSessionId();
     return;
   } catch (error) {
     failures.add('process image: $error');
@@ -99,13 +94,6 @@ Future<void> _doInit(String? libraryPath) async {
     ..._discoveredCandidates(),
   ])) {
     return;
-  }
-
-  try {
-    await RustLib.init();
-    return;
-  } catch (error) {
-    failures.add('flutter_rust_bridge default loader: $error');
   }
 
   throw OpenLvException(

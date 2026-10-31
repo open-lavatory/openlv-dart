@@ -1,19 +1,12 @@
 [package]
-name = "openlv_ffi"
+name = "openlv-dart-native"
 version = "0.1.0"
 edition = "2024"
 publish = false
-description = "flutter_rust_bridge glue crate for the openlv Dart SDK"
 
 [lib]
-name = "openlv_ffi"
+name = "openlv_dart_ffi"
 crate-type = ["cdylib", "staticlib"]
-path = "src/lib.rs"
 
 [dependencies]
-openlv = { git = "https://github.com/open-lavatory/openlv-rs", rev = "115d46e2c19a7d646cf0b39c76797d985c1e19e0" }
-
-flutter_rust_bridge = "=2.13.0"
-anyhow = "1"
-serde_json = "1"
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+bridge = { package = "openlv-uniffi", git = "https://github.com/jonatan-holmgren/openlv-rs", branch = "uniffi" }

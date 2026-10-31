@@ -18,9 +18,8 @@ import 'dart:io';
 import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 
-/// Library file stem; must match the crate name in rust/Cargo.toml and the
-/// loader in lib/src/loader.dart.
-const String _stem = 'openlv_ffi';
+/// Library file stem; must match the wrapper crate and native loader.
+const String _stem = 'openlv_dart_ffi';
 
 /// Asset name; must match `_kAssetId` in lib/src/loader.dart.
 const String _assetName = 'src/native/openlv_ffi.g.dart';

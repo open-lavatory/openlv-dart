@@ -1,7 +1,4 @@
-//! flutter_rust_bridge glue crate for the openlv Dart SDK.
-
-pub mod api;
-
+//! Dart native asset wrapper for the shared OpenLV UniFFI adapter.
 mod bootstrap;
-mod frb_generated;
-mod runtime;
+pub use bootstrap::openlv_ffi_bootstrap;
+pub use bridge::*;
