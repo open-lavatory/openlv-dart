@@ -1,7 +1,32 @@
-# Dart bindings for Open Lavatory
+<p align="center">
+  <a href="https://openlv.sh">
+    <picture>
+      <source srcset="https://raw.githubusercontent.com/v3xlabs/open-lavatory/refs/heads/master/docs/public/openlv_logo_dark.svg" media="(prefers-color-scheme: dark)">
+      <img src="https://raw.githubusercontent.com/v3xlabs/open-lavatory/refs/heads/master/docs/public/openlv_logo_light.svg" alt="Open Lavatory" width="auto" height="60">
+    </picture>
+  </a>
+</p>
 
-Requires a Rust toolchain (`cargo`) on the machine that builds your Flutter/Dart app, since
-the native library is compiled automatically by a build hook.
+<p align="center">
+  Secure peer-to-peer connectivity between dApps and wallets
+</p>
+
+<p align="center">
+    <a href="https://openlv.sh"><img src="https://img.shields.io/badge/Documentation-openlv.sh-orange?style=flat" alt="Documentation: openlv.sh"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Status-In%20Development-blue?style=flat" alt="Status: In Development"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Tests-Passing-lime?style=flat&color=63ba83" alt="Tests: Passing"></a>
+    <a href="#"><img src="https://img.shields.io/badge/License-LGPL--3.0-hotpink?style=flat" alt="License: LGPL-3.0"></a>
+</p>
+
+---
+
+## Features
+
+- Privacy-first, end-to-end encrypted, no metrics, no tracking
+- No central dependency, rather a variety of [signaling layers](https://openlv.sh/api/signaling)
+- Peer-to-peer transport via WebRTC (or other [transport layers](https://openlv.sh/api/transport))
+- Reuse of existing infrastructure and p2p standards
+- User control over connection & configuration
 
 ## Quickstart
 
@@ -62,28 +87,15 @@ await wallet.close();
 
 See [`example/`](example/) for a small Flutter app exercising both roles.
 
-## Native builds and platform setup
+## Native builds & platform setup
 
-The build hook supports Android, iOS, Linux, macOS, and Windows. Install Cargo
-and the Rust target for the architecture you are building. Cross-compilation
-also requires the platform toolchain, such as the Android NDK or Xcode.
+`openlv` supports Android, iOS, Linux, macOS, and Windows.
+Make sure you have a rust toolchain setup.
+And for cross-compilation you'll also need Android NDK or Xcode.
 
-Builds use Cargo's configured target directory and default to the `release`
-profile. Set `hooks.user_defines.openlv.profile` in the consuming application's
-`pubspec.yaml` to `debug` for development; `OPENLV_CARGO_PROFILE` takes precedence.
+You can also adjust the `hooks.user_defines.openlv.profile` in your application's `pubspec.yaml` to `debug` for development.
 
-Native assets load automatically. For a manually built library, call
-`OpenLv.init(libraryPath: '/path/to/library')` before creating a session, or set
-`OPENLV_LIBRARY_PATH`. The explicit path takes precedence over the environment
-variable and the process-image fallback.
+Consumer Flutter apps need network access:
 
-Consumer Flutter apps also need network access:
-
-- **Android:** add `<uses-permission android:name="android.permission.INTERNET" />`
-  to `android/app/src/main/AndroidManifest.xml`.
-- **macOS:** enable `com.apple.security.network.client` in both
-  `DebugProfile.entitlements` and `Release.entitlements` when using App Sandbox.
-
-## License
-
-The Dart bindings and FFI glue use [LGPLv3](LICENSE).
+- **Android:** add `<uses-permission android:name="android.permission.INTERNET" />` to `android/app/src/main/AndroidManifest.xml`.
+- **macOS:** enable `com.apple.security.network.client` in both `DebugProfile.entitlements` and `Release.entitlements` when using App Sandbox.
