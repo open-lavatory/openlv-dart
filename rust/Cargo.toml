@@ -9,4 +9,4 @@ name = "openlv_dart_ffi"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-bridge = { package = "openlv-ffi", git = "https://github.com/open-lavatory/openlv-rs", rev = "73bbe671c560614c867cb9748ef9daf8092b5167" }
+bridge = { package = "openlv-ffi", version = "0.1.0" }
