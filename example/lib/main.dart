@@ -117,6 +117,8 @@ class _DappPageState extends State<DappPage> {
 
   Future<void> _createSession() async {
     final session = await OpenLv.dapp(
+      protocol: OpenLvProtocol.ntfy,
+      server: 'https://ntfy.sh/',
       info: const PeerInfo(
         identity: 'com.example.openlv.dapp',
         name: 'openlv example dApp',

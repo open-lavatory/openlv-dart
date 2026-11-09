@@ -9,4 +9,4 @@ name = "openlv_dart_ffi"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-bridge = { package = "openlv-ffi", version = "0.1.0" }
+bridge = { package = "openlv-ffi", version = "0.2.0" }

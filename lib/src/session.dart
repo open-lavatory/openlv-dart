@@ -24,8 +24,8 @@ abstract final class OpenLv {
   /// Create a host (dApp) session. Call [OpenLvSession.connect] to start signaling.
   static Future<OpenLvSession> dapp({
     String? sessionId,
-    OpenLvProtocol protocol = OpenLvProtocol.ntfy,
-    String? server,
+    required OpenLvProtocol protocol,
+    required String server,
     String? handshakeKey,
     PeerInfo? info,
     required OnRequest onRequest,

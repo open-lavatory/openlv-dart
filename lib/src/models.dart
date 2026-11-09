@@ -130,7 +130,8 @@ class SessionUriInfo {
 /// The signaling protocol used to discover the remote peer.
 enum OpenLvProtocol {
   ntfy('ntfy'),
-  mqtt('mqtt');
+  mqtt('mqtt'),
+  nostr('nostr');
 
   const OpenLvProtocol(this.wireName);
 

@@ -12,6 +12,8 @@ void main() {
     identity: 'com.example.openlv.test',
     name: 'openlv test peer',
   );
+  const protocol = OpenLvProtocol.ntfy;
+  const server = 'https://ntfy.sh/';
 
   test('generateSessionId returns 16 URL-safe characters', () async {
     final id = await OpenLv.generateSessionId();
@@ -21,7 +23,12 @@ void main() {
 
   group('dapp session', () {
     test('is created with a connection URL', () async {
-      final dapp = await OpenLv.dapp(info: info, onRequest: echo);
+      final dapp = await OpenLv.dapp(
+        protocol: protocol,
+        server: server,
+        info: info,
+        onRequest: echo,
+      );
       addTearDown(dapp.close);
 
       expect(dapp.isHost, isTrue);
@@ -55,6 +62,8 @@ void main() {
 
       final dapp = await OpenLv.dapp(
         onRequest: echo,
+        protocol: protocol,
+        server: server,
         sessionId: sessionId,
         handshakeKey: handshakeKey,
         info: info,
@@ -71,6 +80,8 @@ void main() {
       expect(
         () => OpenLv.dapp(
           onRequest: echo,
+          protocol: protocol,
+          server: server,
           info: const PeerInfo(identity: '', name: 'missing identity'),
         ),
         throwsA(isA<OpenLvException>()),
@@ -79,7 +90,12 @@ void main() {
 
     test('rejects an invalid handshake key', () async {
       expect(
-        () => OpenLv.dapp(handshakeKey: 'not-hex', onRequest: echo),
+        () => OpenLv.dapp(
+          protocol: protocol,
+          server: server,
+          handshakeKey: 'not-hex',
+          onRequest: echo,
+        ),
         throwsA(
           isA<OpenLvException>().having(
             (error) => error.kind,
@@ -91,7 +107,12 @@ void main() {
     });
 
     test('send fails before the session is ready', () async {
-      final dapp = await OpenLv.dapp(info: info, onRequest: echo);
+      final dapp = await OpenLv.dapp(
+        protocol: protocol,
+        server: server,
+        info: info,
+        onRequest: echo,
+      );
       addTearDown(dapp.close);
 
       expect(
@@ -107,7 +128,12 @@ void main() {
     });
 
     test('close cancels link waits and prevents new operations', () async {
-      final dapp = await OpenLv.dapp(info: info, onRequest: echo);
+      final dapp = await OpenLv.dapp(
+        protocol: protocol,
+        server: server,
+        info: info,
+        onRequest: echo,
+      );
       addTearDown(dapp.close);
       final closedError = throwsA(
         isA<OpenLvException>().having(
@@ -127,7 +153,12 @@ void main() {
     });
 
     test('concurrent close completes the state stream', () async {
-      final dapp = await OpenLv.dapp(info: info, onRequest: echo);
+      final dapp = await OpenLv.dapp(
+        protocol: protocol,
+        server: server,
+        info: info,
+        onRequest: echo,
+      );
       addTearDown(dapp.close);
       final statesDone = dapp.states.drain<void>();
 
@@ -137,7 +168,12 @@ void main() {
     });
 
     test('rejects non-JSON-encodable messages', () async {
-      final dapp = await OpenLv.dapp(info: info, onRequest: echo);
+      final dapp = await OpenLv.dapp(
+        protocol: protocol,
+        server: server,
+        info: info,
+        onRequest: echo,
+      );
       addTearDown(dapp.close);
 
       expect(
@@ -155,7 +191,12 @@ void main() {
 
   group('wallet session', () {
     test('connects to a dapp connection URL', () async {
-      final dapp = await OpenLv.dapp(info: info, onRequest: echo);
+      final dapp = await OpenLv.dapp(
+        protocol: protocol,
+        server: server,
+        info: info,
+        onRequest: echo,
+      );
       addTearDown(dapp.close);
 
       final wallet = await OpenLv.wallet(dapp.uri, info: info, onRequest: echo);

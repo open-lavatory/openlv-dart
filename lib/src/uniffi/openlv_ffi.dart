@@ -383,8 +383,8 @@ class OpenlvFfiFfi {
     } catch (err) {
       throw StateError('Missing or invalid UniFFI checksum symbol `uniffi_openlv_ffi_checksum_func_create_dapp`: $err');
     }
-    if (_checksum_uniffi_openlv_ffi_checksum_func_create_dapp != 17034) {
-      throw StateError('UniFFI API checksum mismatch for `uniffi_openlv_ffi_checksum_func_create_dapp`: expected 17034, got $_checksum_uniffi_openlv_ffi_checksum_func_create_dapp');
+    if (_checksum_uniffi_openlv_ffi_checksum_func_create_dapp != 12843) {
+      throw StateError('UniFFI API checksum mismatch for `uniffi_openlv_ffi_checksum_func_create_dapp`: expected 12843, got $_checksum_uniffi_openlv_ffi_checksum_func_create_dapp');
     }
     final int _checksum_uniffi_openlv_ffi_checksum_func_create_wallet;
     try {
@@ -2921,8 +2921,8 @@ void resetDefaultBindings() {
   _defaultBindings = null;
 }
 
-/// Create a host (dApp) session from JSON options with the optional keys
-/// `session_id`, `protocol`, `server`, `handshake_key` (hex) and `peer_info`.
+/// Create a host (dApp) session from JSON options with the required keys `protocol` and `server`
+/// and the optional keys `session_id`, `handshake_key` (hex) and `peer_info`.
 Future<Session> createDapp(String optionsJson) {
   return _bindings().createDapp(optionsJson);
 }

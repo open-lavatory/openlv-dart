@@ -36,6 +36,8 @@
 import 'package:openlv/openlv.dart';
 
 final dapp = await OpenLv.dapp(
+  protocol: OpenLvProtocol.ntfy,
+  server: 'https://ntfy.sh/',
   info: PeerInfo(identity: 'com.example.dapp', name: 'Example dApp'),
   onRequest: (message) async {
     final request = message as Map<String, dynamic>;

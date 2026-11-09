@@ -15,9 +15,9 @@ import 'package:test/test.dart';
 void main() {
   final enabled = Platform.environment['OPENLV_LIVE_TESTS'] == '1';
   final mqttServer = Platform.environment['OPENLV_TEST_MQTT_SERVER'];
-  final protocol = mqttServer == null
-      ? OpenLvProtocol.ntfy
-      : OpenLvProtocol.mqtt;
+  final (protocol, server) = mqttServer == null
+      ? (OpenLvProtocol.ntfy, 'https://ntfy.sh/')
+      : (OpenLvProtocol.mqtt, mqttServer);
 
   test(
     'dapp and wallet exchange requests end-to-end',
@@ -27,7 +27,7 @@ void main() {
 
       final dapp = await OpenLv.dapp(
         protocol: protocol,
-        server: mqttServer,
+        server: server,
         info: const PeerInfo(
           identity: 'com.example.openlv.dapp',
           name: 'openlv live dapp',
@@ -100,7 +100,7 @@ void main() {
       final response = Completer<Object?>();
       final dapp = await OpenLv.dapp(
         protocol: protocol,
-        server: mqttServer,
+        server: server,
         onRequest: (message) {
           received.complete();
           return response.future;
@@ -150,7 +150,7 @@ void main() {
       var entered = 0;
       final dapp = await OpenLv.dapp(
         protocol: protocol,
-        server: mqttServer,
+        server: server,
         onRequest: (message) {
           final request = message! as Map<String, dynamic>;
           switch (request['method']) {
@@ -221,7 +221,7 @@ void main() {
       final response = Completer<Object?>();
       final dapp = await OpenLv.dapp(
         protocol: protocol,
-        server: mqttServer,
+        server: server,
         onRequest: (message) {
           received.complete();
           return response.future;
@@ -272,7 +272,7 @@ void main() {
     () async {
       final dapp = await OpenLv.dapp(
         protocol: protocol,
-        server: mqttServer,
+        server: server,
         onRequest: (message) => message,
       );
       addTearDown(dapp.close);

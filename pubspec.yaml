@@ -2,7 +2,7 @@ name: openlv
 description: >-
   Dart bindings for Open Lavatory (openlv), a secure peer-to-peer
   wallet connectivity protocol. Wraps the openlv Rust crate via UniFFI.
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/open-lavatory/openlv-dart
 issue_tracker: https://github.com/open-lavatory/openlv-dart/issues
 homepage: https://openlv.sh
