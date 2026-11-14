@@ -1,0 +1,90 @@
+name: Prepare release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Package version (for example, 0.1.0)"
+        required: true
+        type: string
+      release_notes:
+        description: "Changelog notes for this release"
+        required: true
+        type: string
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ inputs.version }}
+      RELEASE_NOTES: ${{ inputs.release_notes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate version
+        shell: bash
+        run: |
+          [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || {
+            echo "Version must be a stable major.minor.patch" >&2
+            exit 1
+          }
+          if git show-ref --verify --quiet "refs/tags/v$VERSION"; then
+            echo "Package version v$VERSION already exists" >&2
+            exit 1
+          fi
+      - name: Update package version
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import re
+
+          path = Path("pubspec.yaml")
+          contents = path.read_text()
+          updated, count = re.subn(r"(?m)^version: .*?$", f"version: {os.environ['VERSION']}", contents, count=1)
+          if count != 1:
+              raise SystemExit("Could not find exactly one package version in pubspec.yaml")
+          path.write_text(updated)
+
+          changelog = Path("CHANGELOG.md")
+          contents = changelog.read_text()
+          heading = f"## {os.environ['VERSION']}"
+          if re.search(r"(?m)^##\s+" + re.escape(os.environ["VERSION"]) + r"\s*$", contents):
+              raise SystemExit(f"CHANGELOG.md already contains {heading}")
+          notes = os.environ["RELEASE_NOTES"].strip()
+          if not notes:
+              raise SystemExit("Release notes must not be empty")
+          changelog.write_text(f"{heading}\n\n{notes}\n\n{contents.lstrip()}")
+          PY
+      - name: Open release PR
+        shell: bash
+        env:
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          branch="release/v$VERSION"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -C "$branch"
+          git add pubspec.yaml CHANGELOG.md
+          git commit -m "Prepare release v$VERSION"
+          git push --force-with-lease origin "$branch"
+          cat > /tmp/release-pr-body.md <<EOF
+          Prepare OpenLV Dart v$VERSION. Merging this PR completes the version bump; publish it by pushing the matching v$VERSION tag.
+          EOF
+          if gh pr view "$branch" --json url >/dev/null 2>&1; then
+            gh pr edit "$branch" --title "Release v$VERSION" --body-file /tmp/release-pr-body.md
+          else
+            gh pr create --base "$BASE_BRANCH" --head "$branch" \
+              --title "Release v$VERSION" --body-file /tmp/release-pr-body.md
+          fi
